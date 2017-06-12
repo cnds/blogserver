@@ -1,11 +1,19 @@
-import tornado.ioloop
-import tornado.web
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+from tornado.web import Application
+from storage_engine import db
 
-from login import LoginHandler
+from sessions import Sessions
 
-if __name__ == "__main__":
-    application = tornado.web.Application([
-        (r"/login", LoginHandler)
+def make_app():
+    return Application([
+        (r"/sessions", Sessions, dict(db=db))
     ])
-    application.listen(8080)
-    tornado.ioloop.IOLoop.current().start()
+
+app = make_app()
+
+if __name__ == '__main__':
+    server = HTTPServer(app)
+    server.listen(8888)
+    print('start listening on 8888')
+    IOLoop.current().start()
