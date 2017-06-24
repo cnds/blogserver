@@ -1,14 +1,16 @@
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application
-from storage_engine import db
 
 from sessions import Sessions
+from users import Users
+from settings import config
 
 def make_app():
     return Application([
-        (r"/sessions", Sessions, dict(db=db))
-    ])
+        (r"/sessions", Sessions, dict(config=config)),
+        (r"/users", Users, dict(config=config))
+    ], debug=True)
 
 app = make_app()
 
