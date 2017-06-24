@@ -1,13 +1,37 @@
+import json
+
 from pymongo.mongo_client import MongoClient
 from urllib.parse import quote_plus
 
 
-user = 'admin'
-password = '123456'
-host = 'rd.dacdy.xyz'
-uri = "mongodb://{0}:{1}@{2}".format(quote_plus(user),
-                                     quote_plus(password),
-                                     host)
-client = MongoClient(uri)
+class StorageEngine(object):
 
-db = client['authorization']
+    def __init__(self, config):
+        user = config['db']['user']
+        password = config['db']['password']
+        host = config['db']['host']
+        database = config['db']['database']
+        uri = "mongodb://{0}:{1}@{2}".format(
+            user, password, host)
+        client = MongoClient(uri)
+        self.db = client[database]
+
+    def serialize_datetime(self, data):
+        key_list = ['createdDate', 'lastModifiedDate', 'DeletedDate', 'timeStamp']
+        for key in key_list:
+            if data.get(key):
+                data[key] = str(data[key])
+
+
+    def search_by_condition(self, collection, condition):
+        try:
+            result = self.db[collection].find(condition)
+        except Exception as ex:
+            return ex
+        else:
+            result_list = list()
+            for item in result:
+                item['id'] = str(item.pop('_id'))
+                self.serialize_datetime(item)
+                result_list.append(item)
+            return result_list
