@@ -1,7 +1,4 @@
-import json
-
 from pymongo.mongo_client import MongoClient
-from urllib.parse import quote_plus
 
 
 class StorageEngine(object):
