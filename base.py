@@ -1,5 +1,6 @@
 import binascii
 import hashlib
+import jwt
 
 from hashlib import pbkdf2_hmac
 from tornado.web import RequestHandler
@@ -15,22 +16,18 @@ class BaseHandler(RequestHandler):
     def set_default_headers(self):
         self.set_header('content-type', 'application/json')
 
-    @staticmethod
-    def create_hash_key(content, secret_key, round_times=10000):
-        hashed_content = pbkdf2_hmac('sha256',
-                                     content.encode('ascii'),
-                                     secret_key.encode('ascii'),
-                                     round_times)
+
+    @classmethod
+    def create_hash_key(cls, content, secret_key, round_times=10000):
+        hashed_content = pbkdf2_hmac('sha256', content.encode('ascii'), secret_key.encode('ascii'), round_times)
         hashed_content_hex = binascii.hexlify(hashed_content)
 
         return hashed_content_hex
 
 
-    @staticmethod
-    def validate_hash_key(key, hashed_key, secret_key, round_times=10000):
-        derived_key = BaseHandler.create_hash_key(key,
-                                                  secret_key,
-                                                  round_times)
+    @classmethod
+    def validate_hash_key(cls, key, hashed_key, secret_key, round_times=10000):
+        derived_key = cls.create_hash_key(key, secret_key, round_times)
         if derived_key == hashed_key.encode('ascii'):
             return True
 
@@ -42,3 +39,16 @@ class BaseHandler(RequestHandler):
         md5.update(content.encode('ascii'))
         md5_content = md5.hexdigest()
         return md5_content
+
+    @staticmethod
+    def create_jwt(content, secret, algorithm='HS256'):
+        token = jwt.encode(content, secret, algorithm)
+        return token
+
+    @staticmethod
+    def check_jwt(token, secret, algorithms, params):
+        payload = jwt.decode(token, secret, algorithms)
+        token_content = payload['id']
+        if params['user_id'] != token_content:
+            return False, None
+        return True, token_content
