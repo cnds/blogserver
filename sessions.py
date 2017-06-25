@@ -18,10 +18,9 @@ class Sessions(BaseHandler):
 
         password_from_db = user_from_db[0]['password']
         user_id = str(user_from_db[0]['id'])
-        secret_key = self.create_md5_key(user_id)
 
-        if self.validate_hash_key(password, password_from_db, secret_key):
-            token = self.create_jwt({'id': user_id}, secret_key)
+        if self.validate_hash_key(password, password_from_db, self.SECRET_KEY):
+            token = self.create_jwt({'id': user_id}, self.SECRET_KEY)
             return self.write({
                 'id': user_id,
                 'name': user,

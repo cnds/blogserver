@@ -1,4 +1,5 @@
 from pymongo.mongo_client import MongoClient
+from bson.objectid import ObjectId
 
 
 class StorageEngine(object):
@@ -32,3 +33,20 @@ class StorageEngine(object):
                 self.serialize_datetime(item)
                 result_list.append(item)
             return result_list
+
+    def create(self, collection, data):
+        try:
+            result = self.db[collection].insert_one(data)
+        except Exception:
+            return False
+        else:
+            return {'id': str(result.inserted_id)}
+
+    def update(self, collection, object_id, data):
+        try:
+            self.db[collection].update_one({'_id': ObjectId(object_id)},
+                                           {'$set': data})
+        except Exception:
+            return False
+        else:
+            return {'id': object_id}
