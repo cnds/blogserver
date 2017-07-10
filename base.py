@@ -22,7 +22,11 @@ class BaseHandler(RequestHandler):
 
     @classmethod
     def create_hash_key(cls, content, secret_key, round_times=10000):
-        hashed_content = pbkdf2_hmac('sha256', content.encode('ascii'), secret_key.encode('ascii'), round_times)
+        hashed_content = pbkdf2_hmac(
+            'sha256',
+            content.encode('ascii'),
+            secret_key.encode('ascii'),
+            round_times)
         hashed_content_hex = binascii.hexlify(hashed_content)
 
         return hashed_content_hex

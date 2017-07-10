@@ -28,8 +28,20 @@ class Users(BaseHandler):
 
         password = data['password']
         hashed_password = self.create_hash_key(password, self.SECRET_KEY)
-        result = self.db.update('guardians', user_id, {'password': hashed_password})
+        result = self.db.update(
+            'guardians', user_id, {'password': hashed_password})
         if result:
             return self.write({'id': user_id})
         else:
             return self.set_status(400, reason='UPDATE_PASSWORD_FAILED')
+
+
+class User(BaseHandler):
+
+    def get(self, user_id):
+        user = self.db.search_by_id('users', user_id)
+        print(user)
+        if user:
+            return self.write(user)
+        else:
+            return self.write({'error': 'USER_NOT_FOUND'})
