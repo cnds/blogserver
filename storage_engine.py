@@ -63,9 +63,12 @@ class StorageEngine(object):
             return {'id': object_id}
 
     def search_by_id(self, collection, object_id):
-        validated_id = self.transform_to_object_id(object_id)
+        flag, validated_id = self.transform_to_object_id(object_id)
+        if not flag:
+            return True, None
         result = self.db[collection].find_one({'_id': validated_id})
         if result:
+            result['id'] = str(result.pop('_id'))
             return True, result
         else:
             return False, None

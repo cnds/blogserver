@@ -27,7 +27,7 @@ class BaseHandler(RequestHandler):
             content.encode('ascii'),
             secret_key.encode('ascii'),
             round_times)
-        hashed_content_hex = binascii.hexlify(hashed_content)
+        hashed_content_hex = str(binascii.hexlify(hashed_content))
 
         return hashed_content_hex
 

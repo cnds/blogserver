@@ -10,7 +10,7 @@ def make_app():
     return Application([
         (r"/sessions", Sessions, dict(config=config)),
         (r"/users", Users, dict(config=config)),
-        (r"/users/([0-9]+)", User, dict(config=config))
+        (r"/users/(\w+)", User, dict(config=config))
     ], debug=True)
 
 app = make_app()

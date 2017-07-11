@@ -12,9 +12,12 @@ class Sessions(BaseHandler):
         data = json.loads(self.request.body)
         user = data.get('name')
         password = data.get('password')
-        user_from_db = self.db.search_by_condition('guardians', {'name': user})
+        flag, user_from_db = self.db.search_by_condition('users', {'name': user})
+        if not flag:
+            return self.set_status(500, reason='REQUEST_DB_FAILED')
+
         if not user_from_db:
-            return self.write(json.dumps('search by user name failed'))
+            return self.set_status(400, reason='USER_NOT_FOUND')
 
         password_from_db = user_from_db[0]['password']
         user_id = str(user_from_db[0]['id'])
