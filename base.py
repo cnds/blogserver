@@ -1,9 +1,11 @@
 import binascii
 import hashlib
 import jwt
+import json
 
 from hashlib import pbkdf2_hmac
 from tornado.web import RequestHandler
+from jsonschema import Draft4Validator
 
 from storage_engine import StorageEngine
 
@@ -59,3 +61,21 @@ class BaseHandler(RequestHandler):
         if params['user_id'] != token_content:
             return False, None
         return True, token_content
+
+    def validate_body_content(self, schema):
+        try:
+            data = json.loads(self.request.body)
+        except Exception as ex:
+            return 400, 'parse json failed: %s' % ex
+
+        try:
+            Draft4Validator.check_schema(schema)
+        except Exception as ex:
+            return 400, 'invalid schema: %s' % ex
+
+        try:
+            Draft4Validator(schema).validate(data)
+        except Exception as ex:
+            return 400, 'parse body failed: %s' % ex
+        else:
+            return 200, data

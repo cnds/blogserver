@@ -1,6 +1,5 @@
-import json
-
 from base import BaseHandler
+from json_validate import SCHEMA
 
 
 class Users(BaseHandler):
@@ -14,7 +13,10 @@ class Users(BaseHandler):
         return self.write({'users': users})
 
     def post(self):
-        data = json.loads(self.request.body)
+        code, data = self.validate_body_content(SCHEMA['schema_users_post'])
+        if code != 200:
+            return self.set_status(400, reason=data)
+
         user_name = data['name']
         flag, user_from_db = self.db.search_by_condition('users',
                                                    {'name': user_name})

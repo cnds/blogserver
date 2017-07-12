@@ -1,5 +1,5 @@
-import json
 from base import BaseHandler
+from json_validate import SCHEMA
 
 
 class Sessions(BaseHandler):
@@ -9,10 +9,14 @@ class Sessions(BaseHandler):
         return self.write('<h1>200 OK!</h1>')
 
     def post(self):
-        data = json.loads(self.request.body)
+        code, data = self.validate_body_content(SCHEMA['schema_sessions_post'])
+        if code != 200:
+            return self.set_status(400, reason=data)
+
         user = data.get('name')
         password = data.get('password')
-        flag, user_from_db = self.db.search_by_condition('users', {'name': user})
+        flag, user_from_db = self.db.search_by_condition('users',
+                                                         {'name': user})
         if not flag:
             return self.set_status(500, reason='REQUEST_DB_FAILED')
 
