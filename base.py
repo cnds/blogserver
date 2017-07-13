@@ -12,11 +12,11 @@ from storage_engine import StorageEngine
 
 class BaseHandler(RequestHandler):
 
-    _secret_key = 'b75567ee-5950-11e7-b8af-94de80a1017f'
 
     def initialize(self, config):
         self.db = StorageEngine(config)
-        self.SECRET_KEY = self._secret_key
+        self.SECRET_KEY = config['encryption']['key']
+        self.ENCRYPTION_ALGORITHM = config['encryption']['algorithm']
 
     def set_default_headers(self):
         self.set_header('content-type', 'application/json')
@@ -35,7 +35,8 @@ class BaseHandler(RequestHandler):
 
 
     @classmethod
-    def validate_hash_key(cls, key, hashed_key, secret_key, round_times=10000):
+    def validate_hash_key(
+            cls, key, hashed_key, secret_key, round_times=10000):
         derived_key = cls.create_hash_key(key, secret_key, round_times)
         if derived_key == hashed_key:
             return True
