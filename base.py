@@ -1,54 +1,18 @@
-import binascii
-import hashlib
 import jwt
 import json
 
-from hashlib import pbkdf2_hmac
-from tornado.web import RequestHandler
 from jsonschema import Draft4Validator
 
 from storage_engine import StorageEngine
 
 
-class BaseHandler(RequestHandler):
+class BaseHandler(object):
 
 
-    def initialize(self, config):
+    def __init__(self, config):
         self.db = StorageEngine(config)
         self.SECRET_KEY = config['encryption']['key']
         self.ENCRYPTION_ALGORITHM = config['encryption']['algorithm']
-
-    def set_default_headers(self):
-        self.set_header('content-type', 'application/json')
-
-
-    @classmethod
-    def create_hash_key(cls, content, secret_key, round_times=10000):
-        hashed_content = pbkdf2_hmac(
-            'sha256',
-            content.encode('ascii'),
-            secret_key.encode('ascii'),
-            round_times)
-        hashed_content_hex = str(binascii.hexlify(hashed_content))
-
-        return hashed_content_hex
-
-
-    @classmethod
-    def validate_hash_key(
-            cls, key, hashed_key, secret_key, round_times=10000):
-        derived_key = cls.create_hash_key(key, secret_key, round_times)
-        if derived_key == hashed_key:
-            return True
-
-        return False
-
-    @staticmethod
-    def create_md5_key(content):
-        md5 = hashlib.md5()
-        md5.update(content.encode('ascii'))
-        md5_content = md5.hexdigest()
-        return md5_content
 
     @staticmethod
     def create_jwt(content, secret, algorithm='HS256'):
