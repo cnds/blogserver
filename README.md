@@ -1,3 +1,3 @@
-# tornado_webserver
+# Blog Server
 
-server build with tornado
+## Created by [dendy](https://github.com/cnds/dendy) framework.
