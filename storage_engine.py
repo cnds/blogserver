@@ -69,6 +69,7 @@ class StorageEngine(object):
         result = self.db[collection].find_one({'_id': validated_id})
         if result:
             result['id'] = str(result.pop('_id'))
+            self.serialize_datetime(result)
             return True, result
         else:
             return False, None
