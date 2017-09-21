@@ -1,4 +1,4 @@
-from base import BaseHandler
+from apps.base import BaseHandler
 from dendy.request import req
 from dendy.response import resp
 from dendy.utils.encryption_base import create_md5_key, validate_hash_key

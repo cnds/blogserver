@@ -33,7 +33,6 @@ class StorageEngine(object):
         else:
             return True, validated_id
 
-
     def search_by_condition(self, collection, condition):
         try:
             result = self.db[collection].find(condition)

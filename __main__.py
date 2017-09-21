@@ -1,11 +1,11 @@
 import logging
 
-from dendy import API
 from gevent.pywsgi import WSGIServer
-from sessions import Sessions
-from settings import config
-from users_handle import UserHandler
 
+from apps.sessions import Sessions
+from apps.users_handle import UserHandler
+from dendy import API
+from settings import config
 
 app = API()
 app.add_route('/login', Sessions(config))
