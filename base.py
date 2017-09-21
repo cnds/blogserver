@@ -16,7 +16,7 @@ class BaseHandler(object):
 
     @staticmethod
     def create_jwt(content, secret, algorithm='HS256'):
-        token = jwt.encode(content, secret, algorithm)
+        token = jwt.encode(content, secret, algorithm).decode('utf-8')
         return token
 
     @staticmethod
