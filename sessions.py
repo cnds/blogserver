@@ -30,5 +30,5 @@ class Sessions(BaseHandler):
         if not validate_hash_key(password, password_from_db, secret_key):
             return resp.set_status(400, {'error': 'PASSWORD_VERIFICATION_FAILED'})
 
-        token = self.create_jwt({'id': account_id}, secret_key)
+        token = self.create_jwt({'id': account_id}, self.SECRET_KEY)
         return resp.set_status(201, {'id': account_id, 'token': token})

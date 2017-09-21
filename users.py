@@ -1,3 +1,4 @@
+import dendy
 from base import BaseHandler
 from dendy.request import req
 from dendy.response import resp
@@ -10,6 +11,7 @@ class Users(BaseHandler):
 
 class User(BaseHandler):
 
+    @dendy.before(BaseHandler.authenticate)
     def get(self, user_id):
         flag, user = self.db.search_by_id('users', user_id)
         if not flag:
@@ -22,7 +24,7 @@ class User(BaseHandler):
 
     def put(self, user_id):
         body = req.body
-        result = self.db.update('users', user_id, body)
+        result = self.db.update_by_id('users', user_id, body)
         return result
 
     def delete(self, user_id):

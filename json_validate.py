@@ -24,3 +24,17 @@ SCHEMA = {
     'schema_users_post': schema_users_post,
     'schema_sessions_post': schema_sessions_post
 }
+
+schema_token = {
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "id": {"type": "string"}
+    },
+    "required": ["id"],
+    "additionalProperties": False
+}
+
+SCHEMA_INTERNAL = {
+   'schema_token': schema_token
+}

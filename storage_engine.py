@@ -53,7 +53,7 @@ class StorageEngine(object):
         else:
             return {'id': str(result.inserted_id)}
 
-    def update(self, collection, object_id, data):
+    def update_by_id(self, collection, object_id, data):
         try:
             self.db[collection].update_one({'_id': ObjectId(object_id)},
                                            {'$set': data})
