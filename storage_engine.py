@@ -1,3 +1,5 @@
+import logging
+
 from pymongo.mongo_client import MongoClient
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
@@ -54,10 +56,16 @@ class StorageEngine(object):
             return {'id': str(result.inserted_id)}
 
     def update_by_id(self, collection, object_id, data):
+        flag, validated_id = self.transform_to_object_id(object_id)
+        if not flag:
+            logging.error(validated_id)
+            return False
+
         try:
-            self.db[collection].update_one({'_id': ObjectId(object_id)},
+            self.db[collection].update_one({'_id': validated_id},
                                            {'$set': data})
-        except Exception:
+        except Exception as ex:
+            logging.error('update error: %s' % ex)
             return False
         else:
             return {'id': object_id}
@@ -65,7 +73,8 @@ class StorageEngine(object):
     def search_by_id(self, collection, object_id):
         flag, validated_id = self.transform_to_object_id(object_id)
         if not flag:
-            return True, None
+            return False, validated_id
+
         result = self.db[collection].find_one({'_id': validated_id})
         if result:
             result['id'] = str(result.pop('_id'))
@@ -73,3 +82,17 @@ class StorageEngine(object):
             return True, result
         else:
             return False, None
+
+    def remove_by_id(self, collection, object_id):
+        flag, validated_id = self.transform_to_object_id(object_id)
+        if not flag:
+            logging.error(validated_id)
+            return False
+
+        try:
+            self.db[collection].remove({'_id': validated_id})
+        except Exception as ex:
+            logging.error('remove error: %s' % ex)
+            return False
+        else:
+            return {'id': object_id}

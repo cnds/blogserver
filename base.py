@@ -12,7 +12,6 @@ from json_validate import SCHEMA_INTERNAL
 
 class BaseHandler(object):
 
-
     def __init__(self, config):
         self.db = StorageEngine(config)
         self.SECRET_KEY = config['encryption']['key']
