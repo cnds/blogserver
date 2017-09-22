@@ -4,14 +4,37 @@ import dendy
 from apps.base import BaseHandler
 from dendy.request import req
 from dendy.response import resp
+from dendy.utils.encryption_base import create_hash_key, create_md5_key
 
 
-class UsersHandler(BaseHandler):
+class Users(BaseHandler):
 
     def post(self):
-        pass
+        body = req.body
+        name = body['name']
+        password = body['password']
+        flag, user = self.db.search_by_condition('users', {'name': name})
+        if not flag:
+            logging.error('get user by name failed')
+            return resp.set_status(500)
 
-class UserHandler(BaseHandler):
+        if user:
+            return resp.set_status(400, {'error': 'USER_EXISTS'})
+
+        secret_key = create_md5_key(self.SECRET_KEY)
+        hashed_password = create_hash_key(password, secret_key)
+        data_to_insert = {
+            'name': name,
+            'password': hashed_password
+        }
+        result = self.db.create('users', data_to_insert)
+        if result:
+            return resp.set_status(201, result)
+        else:
+            logging.error('create user internal error')
+            return resp.set_status(500)
+
+class User(BaseHandler):
 
     @dendy.before(BaseHandler.authenticate)
     def get(self, user_id):
