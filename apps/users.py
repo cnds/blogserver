@@ -12,7 +12,7 @@ class Users(BaseHandler):
 
     def post(self):
         body = req.body
-        is_valid = self.validate_schema_with_dict(
+        is_valid = self.validate_dict_with_schema(
             body, SCHEMA['schema_users_post'])
         if not is_valid:
             return resp.set_status(400, {'error': 'INVALID_BODY_CONTENT'})
