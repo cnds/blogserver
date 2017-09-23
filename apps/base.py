@@ -55,26 +55,16 @@ class BaseHandler(object):
         try:
             Draft4Validator.check_schema(schema)
         except Exception as ex:
-            return 400, 'invalid schema: %s' % ex
+            logging.error('invalid schema: %s' % ex)
+            return False 
 
         try:
             Draft4Validator(schema).validate(data)
         except Exception as ex:
-            return 400, 'parse body failed: %s' % ex
+            logging.error('parse body failed: %s' % ex)
+            return False
         else:
-            return 200, None
-
-    def validate_body_content(self, schema):
-        try:
-            data = json.loads(req.body)
-        except Exception as ex:
-            return 400, 'parse json failed: %s' % ex
-
-        code, tag = self.validate_dict_with_schema(data, schema)
-        if code != 200:
-            return 400, tag
-
-        return 200, data
+            return True
 
     @staticmethod
     def check_route_id(token_content, params):

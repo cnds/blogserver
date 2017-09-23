@@ -2,6 +2,7 @@ import logging
 
 import dendy
 from apps.base import BaseHandler
+from apps.json_validate import SCHEMA
 from dendy.request import req
 from dendy.response import resp
 from dendy.utils.encryption_base import create_hash_key, create_md5_key
@@ -11,6 +12,11 @@ class Users(BaseHandler):
 
     def post(self):
         body = req.body
+        is_valid = self.validate_schema_with_dict(
+            body, SCHEMA['schema_users_post'])
+        if not is_valid:
+            return resp.set_status(400, {'error': 'INVALID_BODY_CONTENT'})
+
         name = body['name']
         password = body['password']
         flag, user = self.db.search_by_condition('users', {'name': name})
